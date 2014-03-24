@@ -1,0 +1,7 @@
+{
+  "name": "styloola/migrations",
+  "description": "Styloola Migrations",
+  "require": {
+    "php": ">=5.3.0"
+  }
+}
