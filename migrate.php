@@ -1,8 +1,8 @@
 <?php
-	// function __autoload($class_name) {
- //    $class_name = $GLOBALS['files'][$class_name];
-	//   include __DIR__ . '/scripts/' . $class_name;
-	// }
+	 function __autoload($class_name) {
+     $class_name = $class_name . ".php";
+	   include __DIR__ . '/scripts/' . $class_name;
+	 }
 
 	define('APP_ROOT', __DIR__);
 	require_once APP_ROOT . '/config/config.php';
@@ -20,10 +20,10 @@
         if (strpos($file,'.php') !== false) {
           $pureFileName = str_replace(".php", "", $file);
           $fileNameParts = explode("_", $pureFileName);
-          $files[$fileNameParts[0]]['name'] = $file;
-          $files[$fileNameParts[0]]['className'] = $fileNameParts[1];
+          $files[$fileNameParts[1]]['name'] = $file;
+          $files[$fileNameParts[1]]['className'] = $pureFileName;
 
-          $classNameToFile[$fileNameParts[1]] = $file;
+          // $classNameToFile[$fileNameParts[1]] = $file;
         }
       }
       closedir($dh);
@@ -36,7 +36,7 @@
   }
   
 	ksort($files, SORT_STRING);
-	$GLOBALS['files'] = $classNameToFile;
+	// $GLOBALS['files'] = $classNameToFile;
   
 	$dsn  = "pgsql:";
 	$dsn .= ";host=" . $config['db']['postgres']['host'];
@@ -54,19 +54,6 @@
     echo 'Connection failed: ' . $e->getMessage();
     die;
   }
-
-  // Check if database exists.
-  $sql = "SELECT 1 from pg_database WHERE datname='" . $config['db']['postgres']['database'] . "';";
-  try {
-    $sq = $db->query($sql);
-  } catch (PDOException $e) {
-    die;
-  }
-  $dbExists = $sq->fetch();
-  if(!$dbExists) {
-    echo "Database: '" . $config['db']['postgres']['database'] . "' does not exist";
-    die;
-  }
   
   // Check if migrations table exists.
   $sql = "CREATE TABLE IF NOT EXISTS migrations (
@@ -79,7 +66,6 @@
     echo "Something went wrong with migrations table creation";
     die;
   }
-
   
   // Apply migration if is not already applied.
 	foreach ($files as $fileTime => $fileName) {
@@ -93,10 +79,10 @@
         $db->beginTransaction();
 
         // include the script that we have to run.
-        require_once $scriptsDir . "/" . $fileName;
-        // $classToLoad = 'new ' . $fileTime . '();';
-        // $obj  = eval($classToLoad);
-        
+        // require_once $scriptsDir . "/" . $fileName;
+        $obj  = new $fileName['className']($db);
+        $obj->up();
+         
         $db->commit(); 
       }
       catch (PDOException $e) {
