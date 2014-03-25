@@ -6,7 +6,8 @@
 
 	define('APP_ROOT', __DIR__);
   require_once APP_ROOT . '/config/config.php';
-	require_once APP_ROOT . '/utilities/filesystem.php';
+  require_once APP_ROOT . '/utilities/filesystem.php';
+	require_once APP_ROOT . '/utilities/postgres.php';
 
 	$scriptsDir = APP_ROOT . $config['filesystem']['scriptsRelativePath'];
   define('SCRIPTS_ROOT', $scriptsDir);
@@ -16,8 +17,11 @@
   // Retrieve the file list and sort them.
 	$files = getMigrationScripts($scriptsDir);
   
-  if($isCreated || $files == false) {
+  if($isCreated == false || $files === false) { // Strict comparison for false.
     echo "Something went wrong with the directory that stores the migration scripts";
+    die;
+  } else if($files == false) { // Check for empty array
+    echo "There are no scripts in the migrations folder";
     die;
   }
   
@@ -25,25 +29,17 @@
 
   $connections = array();
   if(!empty($config['db']['postgres'])) {
-  	$dsn  = "pgsql:";
-  	$dsn .= ";host=" . $config['db']['postgres']['host'];
-  	$dsn .= ";port=" . $config['db']['postgres']['port'];
-  	$dsn .= ";dbname=" . $config['db']['postgres']['database'];
-  	$dsn .= ";user=" . $config['db']['postgres']['user'];
-  	$dsn .= ";password=" . $config['db']['postgres']['pass'];
+    $postgres = new stlPostgres($config['db']['postgres']);
+    $db = $postgres->getPostgresConnection();
 
-    // Uncomment the lines in php.ini to be able to work PDO and Postgres connection
-    // extension=php_pdo_pgsql.dll
-    // extension=php_pgsql.dll
-  	try {
-      $db = new PDO($dsn, $config['db']['postgres']['user'], $config['db']['postgres']['pass']);
-      $connections['postgres'] = $db;
-    } catch (PDOException $e) {
-      echo 'Postgres Connection failed: ' . $e->getMessage();
+    if($db == false) {
       die;
     }
+  } else {
+    echo 'Postgres connection is mandatory to work the migrations. Check your configuration.';
+    die;
   }
-
+  
   if(!empty($config['db']['mongodb'])) {
     try {
       $connection = $config['db']['mongodb']['host'] . ':' . $config['db']['mongodb']['port'] . '/' . $config['db']['mongodb']['database'];
