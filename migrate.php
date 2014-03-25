@@ -46,23 +46,34 @@
   }
   
 	ksort($files, SORT_STRING);
-	$dsn  = "pgsql:";
-	$dsn .= ";host=" . $config['db']['postgres']['host'];
-	$dsn .= ";port=" . $config['db']['postgres']['port'];
-	$dsn .= ";dbname=" . $config['db']['postgres']['database'];
-	$dsn .= ";user=" . $config['db']['postgres']['user'];
-	$dsn .= ";password=" . $config['db']['postgres']['pass'];
 
-  // Uncomment the lines in php.ini to be able to work PDO and Postgres connection
-  // extension=php_pdo_pgsql.dll
-  // extension=php_pgsql.dll
-	try {
-    $db = new PDO($dsn, $config['db']['postgres']['user'], $config['db']['postgres']['pass']);
-  } catch (PDOException $e) {
-    echo 'Connection failed: ' . $e->getMessage();
-    die;
+  $connections = array();
+  if(!empty($config['db']['postgres'])) {
+  	$dsn  = "pgsql:";
+  	$dsn .= ";host=" . $config['db']['postgres']['host'];
+  	$dsn .= ";port=" . $config['db']['postgres']['port'];
+  	$dsn .= ";dbname=" . $config['db']['postgres']['database'];
+  	$dsn .= ";user=" . $config['db']['postgres']['user'];
+  	$dsn .= ";password=" . $config['db']['postgres']['pass'];
+
+    // Uncomment the lines in php.ini to be able to work PDO and Postgres connection
+    // extension=php_pdo_pgsql.dll
+    // extension=php_pgsql.dll
+  	try {
+      $db = new PDO($dsn, $config['db']['postgres']['user'], $config['db']['postgres']['pass']);
+      $connections['postgres'] = $db;
+    } catch (PDOException $e) {
+      echo 'Connection failed: ' . $e->getMessage();
+      die;
+    }
   }
-  
+
+  if(!empty($config['db']['mongodb'])) {
+    // @todo: initialize mongoDb connecion.
+
+    // $connections['mongodb'] = $db;
+  }
+
   // Check if migrations table exists.
   $sql = "CREATE TABLE IF NOT EXISTS migrations (
             script character(20) NOT NULL,
@@ -88,7 +99,7 @@
 
         // include the script that we have to run.
         // require_once $scriptsDir . "/" . $fileName;
-        $obj  = new $fileName['className']($db);
+        $obj  = new $fileName['className']($connections);
         $obj->up();
          
         $db->commit(); 
