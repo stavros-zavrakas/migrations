@@ -21,8 +21,8 @@
 
 		public function getPostgresConnection() {
 	  	try {
-	      $db = new PDO($this->dsn, $this->pgUser, $this->pgPass);
-	      return $db;
+	      $this->connection = new PDO($this->dsn, $this->pgUser, $this->pgPass);
+	      return $this->connection;
 	    } catch (PDOException $e) {
 	      echo 'Postgres Connection failed: ' . $e->getMessage();
 	      return false;
