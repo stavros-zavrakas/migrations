@@ -5,43 +5,19 @@
 	 }
 
 	define('APP_ROOT', __DIR__);
-	require_once APP_ROOT . '/config/config.php';
+  require_once APP_ROOT . '/config/config.php';
+	require_once APP_ROOT . '/utilities/filesystem.php';
 
 	$scriptsDir = APP_ROOT . $config['filesystem']['scriptsRelativePath'];
   define('SCRIPTS_ROOT', $scriptsDir);
 
-  if (!is_dir($scriptsDir)) {
-    $isCreated = mkdir($scriptsDir, 0700, true);
-    if(!$isCreated) {
-      die;
-    }
-  }
+  $isCreated = createDirectory($scriptsDir);
 
   // Retrieve the file list and sort them.
-	$files = array();
-  $isFileSystemOk = false;
-	if (is_dir($scriptsDir)) {
-    if ($dh = opendir($scriptsDir)) {
-      $isFileSystemOk = true;
-      while (($file = readdir($dh)) !== false) {
-        if (strpos($file,'.php') !== false) {
-          $pureFileName = str_replace(".php", "", $file);
-          $fileNameParts = explode("_", $pureFileName);
-          $files[$fileNameParts[1]]['name'] = $file;
-          $files[$fileNameParts[1]]['className'] = $pureFileName;
-        }
-      }
-      closedir($dh);
-    }
-	}
-
-  if(!$isFileSystemOk) {
-    echo "Something went wrong with the directory that stores the migration scripts";
-    die;
-  }
+	$files = getMigrationScripts($scriptsDir);
   
-  if(empty($files)) {
-    echo "Migrations script directory still empty! Add your migrations scripts!";
+  if($isCreated || $files == false) {
+    echo "Something went wrong with the directory that stores the migration scripts";
     die;
   }
   
