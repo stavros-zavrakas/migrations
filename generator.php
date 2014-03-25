@@ -31,7 +31,7 @@ $className 	= $argv[1];
 $filename 	= "_" . $year . $month . $day . $hours . $minutes . $seconds . "_" . $className;
 
 $string  = "<?php" . PHP_EOL . PHP_EOL;
-$string .= "require_once __DIR__ . '/../vendor/stavros-zavrakas/migrations/MigrationAbstract.php';" . PHP_EOL . PHP_EOL;
+$string .= "require_once __DIR__ . '/../../../vendor/stavros-zavrakas/migrations/MigrationAbstract.php';" . PHP_EOL . PHP_EOL;
 $string .= "class " . $filename . " extends MigrationAbstract {" . PHP_EOL . PHP_EOL;
 $string .= "	public function up() {" . PHP_EOL;
 $string .= 		PHP_EOL;
