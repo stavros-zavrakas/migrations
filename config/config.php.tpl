@@ -17,5 +17,4 @@ $config['db']['postgres']['port'] 		= (($config['env'] == 'development') ? '5432
 $config['db']['postgres']['user'] 		= (($config['env'] == 'development') ? 'xyz' : (($config['env'] == 'test') ? 'xyz' : 'xyz'));
 $config['db']['postgres']['pass'] 		= (($config['env'] == 'development') ? 'xyz' : (($config['env'] == 'test') ? 'xyz' : 'xyz'));
 
-$config['application']['root'] = '/';
-$config['filesystem']['scripts'] = 'scripts';
+$config['filesystem']['scriptsRelativePath'] = '/../../../scripts/';

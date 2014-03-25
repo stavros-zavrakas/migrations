@@ -3,7 +3,7 @@
 define('APP_ROOT', __DIR__);
 require_once APP_ROOT . '/config/config.php';
 
-$scriptsDir = APP_ROOT . $config['filesystem']['scripts'];
+$scriptsDir = APP_ROOT . $config['filesystem']['scriptsRelativePath'];
 
 if(!isset($argv[1])) {
 	echo "Please provide a class name as parameter";
@@ -12,9 +12,12 @@ if(!isset($argv[1])) {
 	$argv[1] = preg_replace("/[^a-zA-Z0-9]+/", "", $argv[1]);
 }
 
+
 if (!is_dir($scriptsDir)) {
-	echo "Scripts directory does not exist. Check your configuration";
-	die;
+  $isCreated = mkdir($scriptsDir, 0700, true);
+  if(!$isCreated) {
+    die;
+  }
 }
 
 $today 			= getdate();

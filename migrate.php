@@ -1,17 +1,24 @@
 <?php
 	 function __autoload($class_name) {
      $class_name = $class_name . ".php";
-	   include __DIR__ . '/scripts/' . $class_name;
+	   include SCRIPTS_ROOT . $class_name;
 	 }
 
 	define('APP_ROOT', __DIR__);
 	require_once APP_ROOT . '/config/config.php';
 
-	$scriptsDir = APP_ROOT . $config['filesystem']['scripts'];
+	$scriptsDir = APP_ROOT . $config['filesystem']['scriptsRelativePath'];
+  define('SCRIPTS_ROOT', $scriptsDir);
+
+  if (!is_dir($scriptsDir)) {
+    $isCreated = mkdir($scriptsDir, 0700, true);
+    if(!$isCreated) {
+      die;
+    }
+  }
 
   // Retrieve the file list and sort them.
 	$files = array();
-  $classNameToFile = array();
   $isFileSystemOk = false;
 	if (is_dir($scriptsDir)) {
     if ($dh = opendir($scriptsDir)) {
@@ -22,8 +29,6 @@
           $fileNameParts = explode("_", $pureFileName);
           $files[$fileNameParts[1]]['name'] = $file;
           $files[$fileNameParts[1]]['className'] = $pureFileName;
-
-          // $classNameToFile[$fileNameParts[1]] = $file;
         }
       }
       closedir($dh);
@@ -35,9 +40,12 @@
     die;
   }
   
-	ksort($files, SORT_STRING);
-	// $GLOBALS['files'] = $classNameToFile;
+  if(empty($files)) {
+    echo "Migrations script directory still empty! Add your migrations scripts!";
+    die;
+  }
   
+	ksort($files, SORT_STRING);
 	$dsn  = "pgsql:";
 	$dsn .= ";host=" . $config['db']['postgres']['host'];
 	$dsn .= ";port=" . $config['db']['postgres']['port'];
