@@ -96,7 +96,7 @@
       catch (PDOException $e) {
         echo print_r($e, true);
         $db->rollback(); 
-        echo "Migration script: $fileName failed. Dying..\n";
+        echo "Migration script: " . $fileName['name'] . " failed. Dying..\n";
         die;
       }
       
@@ -105,8 +105,8 @@
       $stmt->bindParam(':script', $fileTime);
       $stmt->execute();
       
-      echo "Migration script: $fileName succesfully applied\n";
+      echo "Migration script: " . $fileName['name'] . " succesfully applied\n";
 		} else {
-      echo "Migration script: $fileName already applied\n";
+      echo "Migration script: " . $fileName['name'] . " already applied\n";
     }
 	}
