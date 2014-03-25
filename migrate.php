@@ -63,15 +63,20 @@
       $db = new PDO($dsn, $config['db']['postgres']['user'], $config['db']['postgres']['pass']);
       $connections['postgres'] = $db;
     } catch (PDOException $e) {
-      echo 'Connection failed: ' . $e->getMessage();
+      echo 'Postgres Connection failed: ' . $e->getMessage();
       die;
     }
   }
 
   if(!empty($config['db']['mongodb'])) {
-    // @todo: initialize mongoDb connecion.
-
-    // $connections['mongodb'] = $db;
+    try {
+      $connection = $config['db']['mongodb']['host'] . ':' . $config['db']['mongodb']['port'] . '/' . $config['db']['mongodb']['database'];
+      $mongo = new MongoClient($connection);
+      $connections['mongodb'] = $mongo;
+    } catch (Exception $e) {
+      echo 'Mongo Connection failed: ',  $e->getMessage(), "\n";
+      die;
+    }
   }
 
   // Check if migrations table exists.
