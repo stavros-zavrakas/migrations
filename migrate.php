@@ -80,8 +80,6 @@
         $connections['migrations']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $connections['migrations']->beginTransaction();
 
-        // include the script that we have to run.
-        // require_once $scriptsDir . "/" . $fileName;
         $obj  = new $fileName['className']($connections);
         $obj->up();
          
