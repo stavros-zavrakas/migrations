@@ -42,7 +42,7 @@
 
     $connections['migrations'] = $db;
   } else {
-    echo 'Postgres connection is mandatory to work the migrations. Check your configuration.\n';
+    echo $config['db']['migrations']['type'] . ' connection is mandatory to work the migrations. Check your configuration.\n';
     die;
   }
   
