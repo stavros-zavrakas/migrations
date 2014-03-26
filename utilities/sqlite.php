@@ -10,7 +10,7 @@
 	  	$this->dsn = $dsn;
 		}
 
-		public function getPostgresConnection() {
+		public function getConnection() {
 	  	try {
 	      $this->connection = new PDO($this->dsn);
 	      return $this->connection;

@@ -19,7 +19,7 @@
 	  	$this->pgPass = $postgresArray['pass'];
 		}
 
-		public function getPostgresConnection() {
+		public function getConnection() {
 	  	try {
 	      $this->connection = new PDO($this->dsn, $this->pgUser, $this->pgPass);
 	      return $this->connection;

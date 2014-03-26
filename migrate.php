@@ -31,8 +31,10 @@
 
   $connections = array();
   if(!empty($config['db']['migrations'])) {
-    $postgres = new stlPostgres($config['db']['migrations']);
-    $db = $postgres->getPostgresConnection();
+    $sqlType = ucwords($config['db']['migrations']['type']);
+    $sqlType = "stl".$sqlType;
+    $migrations = new $sqlType($config['db']['migrations']);
+    $db = $migrations->getConnection();
 
     if($db == false) {
       die;
