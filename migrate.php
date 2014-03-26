@@ -7,7 +7,8 @@
 	define('APP_ROOT', __DIR__);
   require_once APP_ROOT . '/config/config.php';
   require_once APP_ROOT . '/utilities/filesystem.php';
-	require_once APP_ROOT . '/utilities/postgres.php';
+  require_once APP_ROOT . '/utilities/postgres.php';
+	require_once APP_ROOT . '/utilities/sqlite.php';
 	require_once APP_ROOT . '/utilities/mongo.php';
 
 	$scriptsDir = APP_ROOT . $config['filesystem']['scriptsRelativePath'];
@@ -29,15 +30,15 @@
 	ksort($files, SORT_STRING);
 
   $connections = array();
-  if(!empty($config['db']['postgres'])) {
-    $postgres = new stlPostgres($config['db']['postgres']);
+  if(!empty($config['db']['migrations'])) {
+    $postgres = new stlPostgres($config['db']['migrations']);
     $db = $postgres->getPostgresConnection();
 
     if($db == false) {
       die;
     }
 
-    $connections['postgres'] = $db;
+    $connections['migrations'] = $db;
   } else {
     echo 'Postgres connection is mandatory to work the migrations. Check your configuration.\n';
     die;
@@ -60,7 +61,7 @@
             CONSTRAINT firstkey PRIMARY KEY (script )
           );";
   try {
-    $sq = $connections['postgres']->query($sql);
+    $sq = $connections['migrations']->query($sql);
   } catch (PDOException $e) {
     echo "Something went wrong with migrations table creation";
     die;
@@ -68,31 +69,31 @@
   
   // Apply migration if is not already applied.
 	foreach ($files as $fileTime => $fileName) {
-    $stmt = $connections['postgres']->prepare("SELECT * FROM migrations WHERE script=?");
+    $stmt = $connections['migrations']->prepare("SELECT * FROM migrations WHERE script=?");
     $stmt->execute(array($fileTime));
     $results = $stmt->fetch();
     
     if (!$results) {
       try {
-        $connections['postgres']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $connections['postgres']->beginTransaction();
+        $connections['migrations']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $connections['migrations']->beginTransaction();
 
         // include the script that we have to run.
         // require_once $scriptsDir . "/" . $fileName;
         $obj  = new $fileName['className']($connections);
         $obj->up();
          
-        $connections['postgres']->commit(); 
+        $connections['migrations']->commit(); 
       }
       catch (PDOException $e) {
         echo print_r($e, true);
-        $connections['postgres']->rollback(); 
+        $connections['migrations']->rollback(); 
         echo "Migration script: " . $fileName['name'] . " failed. Dying..\n";
         die;
       }
       
       // Success migration, write on the DB the script date.
-      $stmt = $connections['postgres']->prepare("INSERT INTO migrations (script) VALUES (:script)");
+      $stmt = $connections['migrations']->prepare("INSERT INTO migrations (script) VALUES (:script)");
       $stmt->bindParam(':script', $fileTime);
       $stmt->execute();
       

@@ -7,8 +7,8 @@ abstract class MigrationAbstract implements MigrationInterface {
   protected $mongo = null;
 
   public function __construct($connections) {
-  	if(!empty($connections['postgres'])) {
-    	$this->db = $connections['postgres'];
+  	if(!empty($connections['migrations'])) {
+    	$this->db = $connections['migrations'];
     }
 
   	if(!empty($connections['mongo'])) {
