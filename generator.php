@@ -14,19 +14,19 @@ if(!isset($argv[1])) {
 
 
 if (!is_dir($scriptsDir)) {
-  $isCreated = mkdir($scriptsDir, 0700, true);
-  if(!$isCreated) {
-    die;
-  }
+	$isCreated = mkdir($scriptsDir, 0700, true);
+	if(!$isCreated) {
+		die;
+	}
 }
 
 $today 			= getdate();
 $year 			= $today['year'];
-$month 			= ($today['mon'] < 9) ? '0' . $today['mon'] : $today['mon'];
-$day 				= ($today['mday'] < 9) ? '0' . $today['mday'] : $today['mday'];
-$hours 			= ($today['hours'] < 9) ? '0' . $today['hours'] : $today['hours'];
-$minutes 		= ($today['minutes'] < 9) ? '0' . $today['minutes'] : $today['minutes'];
-$seconds 		= ($today['seconds'] < 9) ? '0' . $today['seconds'] : $today['seconds'];
+$month 			= ($today['mon'] <= 9) ? '0' . $today['mon'] : $today['mon'];
+$day 			= ($today['mday'] <= 9) ? '0' . $today['mday'] : $today['mday'];
+$hours 			= ($today['hours'] <= 9) ? '0' . $today['hours'] : $today['hours'];
+$minutes 		= ($today['minutes'] <= 9) ? '0' . $today['minutes'] : $today['minutes'];
+$seconds 		= ($today['seconds'] <= 9) ? '0' . $today['seconds'] : $today['seconds'];
 $className 	= $argv[1];
 $filename 	= "_" . $year . $month . $day . $hours . $minutes . $seconds . "_" . $className;
 
