@@ -51,5 +51,4 @@ fwrite($fp, $string);
 fclose($fp);
 
 echo $filename . " created successfully!";
-
 ?>
