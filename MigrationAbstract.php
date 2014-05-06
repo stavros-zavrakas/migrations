@@ -6,13 +6,17 @@ abstract class MigrationAbstract implements MigrationInterface {
   protected $db = null;
   protected $mongo = null;
 
-  public function __construct($connections) {
-  	if(!empty($connections['migrations'])) {
-    	$this->db = $connections['migrations'];
+  public function __construct($params) {
+  	if(!empty($params['migrations'])) {
+    	$this->db = $params['migrations'];
     }
 
-  	if(!empty($connections['mongo'])) {
-    	$this->mongo = $connections['mongo'];
+    if(!empty($params['mongo'])) {
+      $this->mongo = $params['mongo'];
+    }
+    
+    if(!empty($params['configuration'])) {
+      $this->configuration = $params['configuration'];
     }
   }
 }

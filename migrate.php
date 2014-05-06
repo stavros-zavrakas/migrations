@@ -30,6 +30,7 @@
 	ksort($files, SORT_STRING);
 
   $connections = array();
+  $connections['configuration'] = $config;
   if(!empty($config['db']['migrations'])) {
     $sqlType = ucwords($config['db']['migrations']['type']);
     $sqlType = "stl".$sqlType;
